@@ -207,7 +207,7 @@ export const MintView: FC = () => {
                 </div>
                 <div className="p-5 mx-auto w-full md:w-4/5">
                     <p>
-                        Participate in the future of the film festival! Help us create the perfect membership NFT collection by telling us how you feel about the following use-cases. Submitting your answers will guarantee your ability to mint our membership NFT when it launches next year!
+                        Participate in the future of the Ukrainian Film Festival Berlin! Help us create the perfect membership NFT collection by telling us how you feel about the following use-cases. Submitting your answers will guarantee your ability to mint our membership NFT when it launches next year! As a holder of the Ukrainian Film Festival Berlin NFT, how would you feel about the following benefits...
                     </p>
 
                     {view === "questionnaire" ? showQuestionnaire() : ""}
@@ -223,37 +223,37 @@ export const MintView: FC = () => {
             <div className="pt-5 mt-5 border-t-4 border-indigo-500">
                 <div className="">
                     <label htmlFor="q1" className="block mt-5 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q1: How do you feel about getting special merchandise such as limited edition festival T-shirts, posters, or collectibles? <p>Q1 answer: {answerToText(editorQuestions.q1)}</p>
+                        Q1: Exclusive film screenings? <p>Q1 answer: {answerToText(editorQuestions.q1)}</p>
                     </label>
                     <input id="q1" name="q1" onChange={handleQuestionChange} value={editorQuestions.q1} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
                     <label htmlFor="q2" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q2: How do you feel about exclusive film screenings? <p>Q2 answer: {answerToText(editorQuestions.q2)}</p>
+                        Q2: Opportunities to meet with directors or actors? <p>Q2 answer: {answerToText(editorQuestions.q2)}</p>
                     </label>
                     <input id="q2" name="q2" onChange={handleQuestionChange} value={editorQuestions.q2} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
                     <label htmlFor="q3" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q3: How do you feel about opportunities to meet with directors or actors? <p>Q3 answer: {answerToText(editorQuestions.q3)}</p>
+                        Q3: Special merchandise such as limited edition festival T-shirts, posters, or collectibles? <p>Q3 answer: {answerToText(editorQuestions.q3)}</p>
                     </label>
                     <input id="q3" name="q3" onChange={handleQuestionChange} value={editorQuestions.q3} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
                     <label htmlFor="q4" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q4: How do you feel about getting discounts for future festivals? <p>Q4 answer: {answerToText(editorQuestions.q4)}</p>
+                        Q4: Discounts for future festivals? <p>Q4 answer: {answerToText(editorQuestions.q4)}</p>
                     </label>
                     <input id="q4" name="q4" onChange={handleQuestionChange} value={editorQuestions.q4} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
                     <label htmlFor="q5" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q5: How do you feel about early access to NFT collections created in collaboration with Ukrainian artists? <p>Q5 answer: {answerToText(editorQuestions.q5)}</p>
+                        Q5: Access to online streams of movies? <p>Q5 answer: {answerToText(editorQuestions.q5)}</p>
                     </label>
                     <input id="q5" name="q5" onChange={handleQuestionChange} value={editorQuestions.q5} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
                     <label htmlFor="q6" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q6: How do you feel about access to commemorative limited edition NFTs for the festival, such as unique artwork, clips from featured films, etc.? <p>Q6 answer: {answerToText(editorQuestions.q6)}</p>
+                        Q6: Early access to NFT collections created in collaboration with Ukrainian artists? <p>Q6 answer: {answerToText(editorQuestions.q6)}</p>
                     </label>
                     <input id="q6" name="q6" onChange={handleQuestionChange} value={editorQuestions.q6} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
                     <label htmlFor="q7" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Q7: How do you feel about access to online streams of movies? <p>Q7 answer: {answerToText(editorQuestions.q7)}</p>
+                        Q7: Access to commemorative limited edition NFTs for the festival, such as unique artwork, clips from featured films, etc.? <p>Q7 answer: {answerToText(editorQuestions.q7)}</p>
                     </label>
                     <input id="q7" name="q7" onChange={handleQuestionChange} value={editorQuestions.q7} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
@@ -307,8 +307,20 @@ export const MintView: FC = () => {
     //TODO: add admin func to burn config
 
     const showSpinner = () => {
-        return <>
-            <button className="btn loading">Please connect a wallet!</button>
+        return             <>
+            <div className="p-5">
+                <h1 className="text-center text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mt-10 mb-8">
+                    Hello there, Ukrainian Film Festival enthusiast!
+                </h1>
+            </div>
+            <div className="p-5 mx-auto w-full md:w-4/5">
+                <p>
+                    In order to register your interest in the member NFT of the Ukrainian Film Festival Berlin, you will need to have a Solana wallet installed. This can be done on Android and Apple iOS devices as well as Firefox and Chrome browsers. Two common options include <a target="blank" href={"https://phantom.app"} className="text-blue-600 dark:text-purple-500 hover:underline">Phantom</a>, <a target="blank" href={"https://ultimate.app"} className="text-blue-600 dark:text-purple-500 hover:underline">Ultimate</a> and <a target="blank" href={"https://solflare.com"} className="text-blue-600 dark:text-purple-500 hover:underline">Solflare</a>. Once you have a wallet installed, click the <span className="text-blue-600 dark:text-purple-500">Select Wallet</span> at the top of the screen.
+                    <br/>
+                    If you need assistance, find one of our knowledgeable helpers at the Festivals after party on Saturday.
+                </p>
+            </div>
+            <div className="text-center"><button className="btn loading">Please connect a wallet!</button></div>
         </>
     }
 
