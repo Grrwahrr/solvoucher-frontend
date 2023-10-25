@@ -222,37 +222,37 @@ export const MintView: FC = () => {
         return (
             <div className="pt-5 mt-5 border-t-4 border-indigo-500">
                 <div className="">
-                    <label htmlFor="q1" className="block mt-5 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q1" className="block mt-5 mb-2 text-sm font-medium">
                         Q1: Exclusive film screenings? <p>Q1 answer: {answerToText(editorQuestions.q1)}</p>
                     </label>
                     <input id="q1" name="q1" onChange={handleQuestionChange} value={editorQuestions.q1} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
-                    <label htmlFor="q2" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q2" className="block mt-8 mb-2 text-sm font-medium">
                         Q2: Opportunities to meet with directors or actors? <p>Q2 answer: {answerToText(editorQuestions.q2)}</p>
                     </label>
                     <input id="q2" name="q2" onChange={handleQuestionChange} value={editorQuestions.q2} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
-                    <label htmlFor="q3" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q3" className="block mt-8 mb-2 text-sm font-medium">
                         Q3: Special merchandise such as limited edition festival T-shirts, posters, or collectibles? <p>Q3 answer: {answerToText(editorQuestions.q3)}</p>
                     </label>
                     <input id="q3" name="q3" onChange={handleQuestionChange} value={editorQuestions.q3} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
-                    <label htmlFor="q4" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q4" className="block mt-8 mb-2 text-sm font-medium">
                         Q4: Discounts for future festivals? <p>Q4 answer: {answerToText(editorQuestions.q4)}</p>
                     </label>
                     <input id="q4" name="q4" onChange={handleQuestionChange} value={editorQuestions.q4} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
-                    <label htmlFor="q5" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q5" className="block mt-8 mb-2 text-sm font-medium">
                         Q5: Access to online streams of movies? <p>Q5 answer: {answerToText(editorQuestions.q5)}</p>
                     </label>
                     <input id="q5" name="q5" onChange={handleQuestionChange} value={editorQuestions.q5} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
-                    <label htmlFor="q6" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q6" className="block mt-8 mb-2 text-sm font-medium">
                         Q6: Early access to NFT collections created in collaboration with Ukrainian artists? <p>Q6 answer: {answerToText(editorQuestions.q6)}</p>
                     </label>
                     <input id="q6" name="q6" onChange={handleQuestionChange} value={editorQuestions.q6} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
 
-                    <label htmlFor="q7" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label htmlFor="q7" className="block mt-8 mb-2 text-sm font-medium">
                         Q7: Access to commemorative limited edition NFTs for the festival, such as unique artwork, clips from featured films, etc.? <p>Q7 answer: {answerToText(editorQuestions.q7)}</p>
                     </label>
                     <input id="q7" name="q7" onChange={handleQuestionChange} value={editorQuestions.q7} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
