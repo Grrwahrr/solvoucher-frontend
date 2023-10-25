@@ -1,0 +1,287 @@
+import {FC, useCallback, useEffect, useState} from 'react';
+import {useAnchorWallet, useConnection, useWallet} from '@solana/wallet-adapter-react';
+import {TransactionSignature} from "@solana/web3.js";
+import {
+    deriveConfig,
+    deriveVoucher,
+    deriveOwnerToVoucher, getKeyPairForSecretKeyBase58,
+    notifyTxError,
+    notifyTxSuccess,
+    solVoucherProgram
+} from "../solana";
+import Link from "next/link";
+import {BN} from "@coral-xyz/anchor";
+
+const COLLECTION_NAME = "ua_film_festival";
+
+const emptyQuestions = {
+    q1: "",
+    q2: "",
+    q3: "",
+    q4: "",
+    q5: "",
+    q6: "",
+    q7: "",
+    q8: "",
+    q9: "",
+};
+
+
+export const MintView: FC = () => {
+    const {connection} = useConnection();
+    const {publicKey} = useWallet();
+    const anchorWallet = useAnchorWallet();
+
+    // Views: init, editConfig, questionnaire
+    const [view, setView] = useState<String>("loading");
+    const [config, setConfig] = useState<any>({exists: false});
+    const [editorQuestions, setEditorQuestion] = useState<any>(emptyQuestions);
+
+
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!publicKey) {
+                return;
+            }
+
+            console.log("Loading collection config...");
+            const program = solVoucherProgram(connection, anchorWallet);
+            const [accDataConfig, bump] = deriveConfig(program, COLLECTION_NAME);
+
+            // Try to load the collections config account
+            try {
+                const onChainConfig = await program.account.config.fetch(accDataConfig);
+                setConfig({exists: true, admin: onChainConfig.admin.toString()});
+            } catch (e) {
+                setView("init");
+                return;
+            }
+
+            setView("questionnaire");
+        }
+        fetchData().catch(console.error);
+    }, [connection, publicKey, anchorWallet]);
+
+    const btnSaveConfig = useCallback(async () => {
+        console.log("Running Save Config");
+        const program = solVoucherProgram(connection, anchorWallet);
+        const [accDataConfig, bump] = deriveConfig(program, COLLECTION_NAME);
+        let onChainConfig = undefined;
+
+        // Attempt to load the config account
+        try { onChainConfig = await program.account.config.fetch(onChainConfig); } catch (error: any) {}
+
+        if (onChainConfig) {
+            let tx: TransactionSignature = '';
+            try {
+                tx = await program.methods
+                    .configUpdate(COLLECTION_NAME, {PENDING_TODO: {}})
+                    .accounts({
+                        payer: publicKey,
+                        config: accDataConfig,
+                    }).rpc();
+                notifyTxSuccess("Config was updated", tx);
+            } catch (error: any) {
+                notifyTxError("Could not update config", error, tx);
+            }
+        } else {
+            let tx: TransactionSignature = '';
+            try {
+                tx = await program.methods
+                    .configInitialize(COLLECTION_NAME)
+                    .accounts({
+                        payer: publicKey,
+                        config: accDataConfig,
+                    }).rpc();
+                notifyTxSuccess("Config was created", tx);
+                setConfig({...config, exists: true});
+                setView("events");
+            } catch (error: any) {
+                notifyTxError("Could not create config", error, tx);
+            }
+        }
+    }, [publicKey, connection, config]);
+
+    const btnSubmitAnswers = useCallback(async () => {
+        console.log("Running Submit Answers");
+        alert("TODO");
+        const program = solVoucherProgram(connection, anchorWallet);
+        const [accDataConfig, bump] = deriveConfig(program, COLLECTION_NAME);
+        let onChainConfig = undefined;
+
+        // Attempt to load the config account
+        try { onChainConfig = await program.account.config.fetch(onChainConfig); } catch (error: any) {}
+
+        if (onChainConfig) {
+            let tx: TransactionSignature = '';
+            try {
+                tx = await program.methods
+                    .configUpdate(COLLECTION_NAME, {PENDING_TODO: {}})
+                    .accounts({
+                        payer: publicKey,
+                        config: accDataConfig,
+                    }).rpc();
+                notifyTxSuccess("Config was updated", tx);
+            } catch (error: any) {
+                notifyTxError("Could not update config", error, tx);
+            }
+        } else {
+            let tx: TransactionSignature = '';
+            try {
+                tx = await program.methods
+                    .configInitialize(COLLECTION_NAME)
+                    .accounts({
+                        payer: publicKey,
+                        config: accDataConfig,
+                    }).rpc();
+                notifyTxSuccess("Config was created", tx);
+                setConfig({...config, exists: true});
+                setView("events");
+            } catch (error: any) {
+                notifyTxError("Could not create config", error, tx);
+            }
+        }
+    }, [publicKey, connection, config]);
+
+
+    const createConfigHero = () => {
+        return (
+            <>
+            <div className="md:hero-content flex flex-col">
+                <h1 className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mt-10 mb-8">
+                    Setup a collection
+                </h1>
+                <div className="w-full items-center">
+                    <div className="hero h-50 bg-base-300 w-full md:w-4/5 m-auto rounded-xl">
+                        <div className="hero-content text-center">
+                            <div className="max-w-md">
+                                <p className="py-6">This collection does not yet exist.
+                                    Click here to create it.</p>
+                                <button className="btn btn-primary"
+                                        onClick={btnSaveConfig}>Create Collection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </>
+        );
+    }
+
+    const showMainView = () => {
+        return (
+            <>
+                <div className="p-5">
+                    <h1 className="text-center text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mt-10 mb-8">
+                        Hello there, Ukrainian Film Festival enthusiast!
+                    </h1>
+                </div>
+                <div className="p-5 mx-auto w-full md:w-4/5">
+                    <p>
+                        Participate in the future of the film festival! Help us create the perfect membership NFT collection by telling us how you feel about the following use-cases. Submitting your answers will guarantee your ability to mint our membership NFT when it launches next year!
+                    </p>
+
+                    {view === "questionnaire" ? showQuestionnaire() : ""}
+
+                    {config !== undefined && config.admin == publicKey ? showEditConfig() : ""}
+                </div>
+            </>
+        );
+    }
+
+    const showQuestionnaire = () => {
+        return (
+            <div className="pt-5 mt-5 border-t-4 border-indigo-500">
+                <div className="">
+                    <label htmlFor="q1" className="block mt-5 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q1: How do you feel about getting special merchandise such as limited edition festival T-shirts, posters, or collectibles? <p>Q1 answer: {answerToText(editorQuestions.q1)}</p>
+                    </label>
+                    <input id="q1" name="q1" onChange={handleQuestionChange} value={editorQuestions.q1} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <label htmlFor="q2" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q2: How do you feel about exclusive film screenings? <p>Q2 answer: {answerToText(editorQuestions.q2)}</p>
+                    </label>
+                    <input id="q2" name="q2" onChange={handleQuestionChange} value={editorQuestions.q2} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <label htmlFor="q3" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q3: How do you feel about opportunities to meet with directors or actors? <p>Q3 answer: {answerToText(editorQuestions.q3)}</p>
+                    </label>
+                    <input id="q3" name="q3" onChange={handleQuestionChange} value={editorQuestions.q3} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <label htmlFor="q4" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q4: How do you feel about getting discounts for future festivals? <p>Q4 answer: {answerToText(editorQuestions.q4)}</p>
+                    </label>
+                    <input id="q4" name="q4" onChange={handleQuestionChange} value={editorQuestions.q4} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <label htmlFor="q5" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q5: How do you feel about early access to NFT collections created in collaboration with Ukrainian artists? <p>Q5 answer: {answerToText(editorQuestions.q5)}</p>
+                    </label>
+                    <input id="q5" name="q5" onChange={handleQuestionChange} value={editorQuestions.q5} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <label htmlFor="q6" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q6: How do you feel about access to commemorative limited edition NFTs for the festival, such as unique artwork, clips from featured films, etc.? <p>Q6 answer: {answerToText(editorQuestions.q6)}</p>
+                    </label>
+                    <input id="q6" name="q6" onChange={handleQuestionChange} value={editorQuestions.q6} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <label htmlFor="q7" className="block mt-8 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Q7: How do you feel about access to online streams of movies? <p>Q7 answer: {answerToText(editorQuestions.q7)}</p>
+                    </label>
+                    <input id="q7" name="q7" onChange={handleQuestionChange} value={editorQuestions.q7} placeholder="5" type="range" min="1" max="9" className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer " />
+
+                    <div className="mt-10 text-center">
+                        <div className="m-1 bg-gradient-to-r from-indigo-500 to-fuchsia-500 rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                        <button
+                            className="group w-60 m-2 btn animate-pulse bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:from-white hover:to-purple-300 text-black"
+                            onClick={btnSubmitAnswers} disabled={!publicKey}
+                        >
+                            <div className="hidden group-disabled:block">Wallet not connected</div>
+                            <span className="block group-disabled:hidden" >Submit & Register</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const answerToText = (answer) => {
+        switch (answer) {
+            case "1": return <>Extremely negative</>
+            case "2": return <>Very negative</>
+            case "3": return <>Fairly negative</>
+            case "4": return <>Slightly negative</>
+            case "5": return <>No opinion</>
+            case "6": return <>Slightly positive</>
+            case "7": return <>Fairly positive</>
+            case "8": return <>Very positive</>
+            case "9": return <>Extremely positive</>
+        }
+        return <>(Adjust the slider below)</>
+    };
+
+    const handleQuestionChange = (e) => {
+        let {name, value} = e.target;
+        setEditorQuestion({...editorQuestions, [name]: value});
+    };
+
+    const showEditConfig = () => {
+        return <div className="pt-5 mt-5 border-t-4 border-indigo-500">
+            As the admin, you can update the config state:
+            <div className="py-1"><button className="btn btn-md btn-primary" onClick={btnSaveConfig}>Set inactive</button></div>
+            <div className="py-1"><button className="btn btn-md btn-secondary" onClick={btnSaveConfig}>Set minting</button></div>
+            <div className="py-1"><button className="btn btn-md btn-warning" onClick={btnSaveConfig}>Set burning</button></div>
+        </div>
+    }
+
+    const showSpinner = () => {
+        return <button className="btn loading">loading</button>
+    }
+
+    return <>
+        {view === "loading" ? showSpinner() : ""}
+        {view !== "loading" && !config.exists ? createConfigHero() : ''}
+        {view !== "loading" && config.exists ? showMainView() : ''}
+    </>
+};

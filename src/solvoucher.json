@@ -1,0 +1,303 @@
+{
+  "version": "0.1.0",
+  "name": "solvoucher",
+  "instructions": [
+    {
+      "name": "configInitialize",
+      "docs": [
+        "Setup a new configuration account"
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "configId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "configUpdate",
+      "docs": [
+        "Update some configuration account"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "configId",
+          "type": "string"
+        },
+        {
+          "name": "state",
+          "type": {
+            "defined": "ConfigState"
+          }
+        }
+      ]
+    },
+    {
+      "name": "configDelete",
+      "docs": [
+        "Delete a configuration account"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "configId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "voucherMint",
+      "docs": [
+        "Mint a new voucher for a given config account"
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "voucher",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ownerToVoucher",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "configId",
+          "type": "string"
+        },
+        {
+          "name": "data",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "voucherBurn",
+      "docs": [
+        "Burn an existing voucher for a given config account"
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "voucher",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ownerToVoucher",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "configId",
+          "type": "string"
+        },
+        {
+          "name": "voucherId",
+          "type": "u32"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "state",
+            "docs": [
+              "State of this config"
+            ],
+            "type": {
+              "defined": "ConfigState"
+            }
+          },
+          {
+            "name": "vouchersMinted",
+            "docs": [
+              "Incremental counter of vouchers created"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "vouchersBurned",
+            "docs": [
+              "Incremental counter of vouchers burned"
+            ],
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OwnerToVoucher",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "docs": [
+              "The id of the voucher associated with this account"
+            ],
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Voucher",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "The owner of this voucher"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "data",
+            "docs": [
+              "Voucher data"
+            ],
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "ConfigState",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Inactive"
+          },
+          {
+            "name": "Minting"
+          },
+          {
+            "name": "Burning"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "OverflowError",
+      "msg": "Overflow Error"
+    },
+    {
+      "code": 6001,
+      "name": "NotAuthorized",
+      "msg": "Not authorized to perform this action"
+    },
+    {
+      "code": 6002,
+      "name": "NotAllVouchersBurned",
+      "msg": "Can only delete this collection once all vouchers have been burned"
+    },
+    {
+      "code": 6003,
+      "name": "ConfigStateMustBeMinting",
+      "msg": "This collection can not currently be minted"
+    },
+    {
+      "code": 6004,
+      "name": "ConfigStateMustBeBurning",
+      "msg": "This collection can not currently be burned"
+    }
+  ],
+  "metadata": {
+    "address": "DtDGo9RPBKmVcFKBxBTMzVs6ckQ5bRnrzW1FPYPEEZAq"
+  }
+}
