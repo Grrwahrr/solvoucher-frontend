@@ -4,15 +4,16 @@ import {TransactionSignature} from "@solana/web3.js";
 import {
     deriveConfig,
     deriveVoucher,
-    deriveOwnerToVoucher, getKeyPairForSecretKeyBase58,
+    deriveOwnerToVoucher,
     notifyTxError,
     notifyTxSuccess,
     solVoucherProgram
 } from "../solana";
-import Link from "next/link";
-import {BN} from "@coral-xyz/anchor";
+import {notify} from "../utils/notifications";
+import {sha256} from "js-sha256";
+import {bs58} from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
-const COLLECTION_NAME = "ua_film_festival";
+const COLLECTION_NAME: string = "ua_film_festival";
 
 const emptyQuestions = {
     q1: "",
@@ -64,20 +65,20 @@ export const MintView: FC = () => {
         fetchData().catch(console.error);
     }, [connection, publicKey, anchorWallet]);
 
-    const btnSaveConfig = useCallback(async () => {
+    const btnSaveConfig = useCallback(async (newSate?: any) => {
         console.log("Running Save Config");
         const program = solVoucherProgram(connection, anchorWallet);
         const [accDataConfig, bump] = deriveConfig(program, COLLECTION_NAME);
-        let onChainConfig = undefined;
 
         // Attempt to load the config account
-        try { onChainConfig = await program.account.config.fetch(onChainConfig); } catch (error: any) {}
+        let onChainConfig = undefined;
+        try { onChainConfig = await program.account.config.fetch(accDataConfig); } catch (error: any) {}
 
         if (onChainConfig) {
             let tx: TransactionSignature = '';
             try {
                 tx = await program.methods
-                    .configUpdate(COLLECTION_NAME, {PENDING_TODO: {}})
+                    .configUpdate(COLLECTION_NAME, newSate)
                     .accounts({
                         payer: publicKey,
                         config: accDataConfig,
@@ -105,44 +106,69 @@ export const MintView: FC = () => {
     }, [publicKey, connection, config]);
 
     const btnSubmitAnswers = useCallback(async () => {
-        console.log("Running Submit Answers");
-        alert("TODO");
+        // Build the data we wish to store
+        let data = "";
+        for (const prop in editorQuestions) {
+            data += editorQuestions[prop] !== "" ? editorQuestions[prop] : "0";
+        }
+
+        console.log("Running Submit Answers with data: ", data);
+
         const program = solVoucherProgram(connection, anchorWallet);
         const [accDataConfig, bump] = deriveConfig(program, COLLECTION_NAME);
-        let onChainConfig = undefined;
 
         // Attempt to load the config account
-        try { onChainConfig = await program.account.config.fetch(onChainConfig); } catch (error: any) {}
+        let onChainConfig = undefined;
+        try { onChainConfig = await program.account.config.fetch(accDataConfig); } catch (error: any) {}
+        // console.log("DEBUG current config: ", onChainConfig);
 
-        if (onChainConfig) {
-            let tx: TransactionSignature = '';
-            try {
-                tx = await program.methods
-                    .configUpdate(COLLECTION_NAME, {PENDING_TODO: {}})
-                    .accounts({
-                        payer: publicKey,
-                        config: accDataConfig,
-                    }).rpc();
-                notifyTxSuccess("Config was updated", tx);
-            } catch (error: any) {
-                notifyTxError("Could not update config", error, tx);
-            }
-        } else {
-            let tx: TransactionSignature = '';
-            try {
-                tx = await program.methods
-                    .configInitialize(COLLECTION_NAME)
-                    .accounts({
-                        payer: publicKey,
-                        config: accDataConfig,
-                    }).rpc();
-                notifyTxSuccess("Config was created", tx);
-                setConfig({...config, exists: true});
-                setView("events");
-            } catch (error: any) {
-                notifyTxError("Could not create config", error, tx);
+        // Check some required conditions before continuing
+        if (!onChainConfig) {
+            notify({type: 'error', message: "Not currently found", description: "", txid: ""});
+            return;
+        }
+        if ( JSON.stringify(onChainConfig.state) !== JSON.stringify({minting: {}}) ) {
+            notify({type: 'error', message: "Not currently enabled", description: "", txid: ""});
+            return;
+        }
+
+        // Generate the voucher PDAs
+        const [accVoucher, bumpVoucher] = deriveVoucher(program, COLLECTION_NAME, onChainConfig.vouchers_minted);
+        const [accOwnerToVoucher, bumpOwnerToVoucher] = deriveOwnerToVoucher(program, COLLECTION_NAME, publicKey);
+
+        let tx: TransactionSignature = '';
+        try {
+            tx = await program.methods
+                .voucherMint(COLLECTION_NAME, data)
+                .accounts({
+                    payer: publicKey,
+                    config: accDataConfig,
+                    voucher: accVoucher,
+                    ownerToVoucher: accOwnerToVoucher,
+                }).rpc();
+            notifyTxSuccess("Success! Your answers were recorded!", tx);
+        } catch (error: any) {
+            notifyTxError("That did not work. Please try again.", error, tx);
+        }
+    }, [publicKey, connection, config, editorQuestions]);
+
+    const btnDumpAnswers = useCallback(async () => {
+        console.log("Running Dump Answers");
+
+        const program = solVoucherProgram(connection, anchorWallet);
+        const discriminator = Buffer.from(sha256.digest("account:Voucher")).subarray(0, 8)
+        const filter = { memcmp: { offset: 0,
+                bytes: bs58.encode(discriminator)
             }
         }
+        const accounts = await connection.getProgramAccounts(program.programId, { filters: [filter] })
+        let i = 0;
+        for (const acc of accounts) {
+            i++;
+            let slice = acc.account.data.slice(44,53);
+            console.log("ACCOUNT ", i, ": ", slice.toString());
+        }
+
     }, [publicKey, connection, config]);
 
 
@@ -269,14 +295,21 @@ export const MintView: FC = () => {
     const showEditConfig = () => {
         return <div className="pt-5 mt-5 border-t-4 border-indigo-500">
             As the admin, you can update the config state:
-            <div className="py-1"><button className="btn btn-md btn-primary" onClick={btnSaveConfig}>Set inactive</button></div>
-            <div className="py-1"><button className="btn btn-md btn-secondary" onClick={btnSaveConfig}>Set minting</button></div>
-            <div className="py-1"><button className="btn btn-md btn-warning" onClick={btnSaveConfig}>Set burning</button></div>
+            <div className="py-1"><button className="btn btn-md bg-blue-700 hover:bg-blue-800" onClick={()=>btnSaveConfig({inactive: {}})}>Set inactive</button></div>
+            <div className="py-1"><button className="btn btn-md bg-green-700 hover:bg-green-800" onClick={()=>btnSaveConfig({minting: {}})}>Set minting</button></div>
+            <div className="py-1"><button className="btn btn-md bg-yellow-700 hover:bg-yellow-800" onClick={()=>btnSaveConfig({burning: {}})}>Set burning</button></div>
+
+            <div className="py-1"><button className="btn btn-md bg-grey-700 hover:bg-grey-800" onClick={btnDumpAnswers}>Dump recorded answers</button></div>
         </div>
     }
+    //TODO: add admin func to show list of votes
+    //TODO: add admin func to burn accounts
+    //TODO: add admin func to burn config
 
     const showSpinner = () => {
-        return <button className="btn loading">loading</button>
+        return <>
+            <button className="btn loading">Please connect a wallet!</button>
+        </>
     }
 
     return <>
