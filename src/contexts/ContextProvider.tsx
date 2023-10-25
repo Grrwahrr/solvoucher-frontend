@@ -41,7 +41,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
             new TorusWalletAdapter(),
             new LedgerWalletAdapter(),
             new WalletConnectWalletAdapter({
-                network,
+                network: network == WalletAdapterNetwork.Mainnet ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet,
                 options: {
                     relayUrl: 'wss://relay.walletconnect.com',
                     // example WC app project ID
