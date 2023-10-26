@@ -315,9 +315,9 @@ export const MintView: FC = () => {
             </div>
             <div className="p-5 mx-auto w-full md:w-4/5">
                 <p>
-                    In order to register your interest in the member NFT of the Ukrainian Film Festival Berlin, you will need to have a Solana wallet installed. This can be done on Android and Apple iOS devices as well as Firefox and Chrome browsers. Two common options include <a target="blank" href={"https://phantom.app"} className="text-blue-600 dark:text-purple-500 hover:underline">Phantom</a>, <a target="blank" href={"https://ultimate.app"} className="text-blue-600 dark:text-purple-500 hover:underline">Ultimate</a> and <a target="blank" href={"https://solflare.com"} className="text-blue-600 dark:text-purple-500 hover:underline">Solflare</a>. Once you have a wallet installed, click the <span className="text-blue-600 dark:text-purple-500">Select Wallet</span> at the top of the screen.
+                    In order to register your interest in the member NFT of the Ukrainian Film Festival Berlin, you will need to have a Solana wallet installed. This can be done on Android and Apple iOS devices as well as Firefox and Chrome browsers. Some common options include <a target="blank" href={"https://phantom.app"} className="text-blue-600 dark:text-purple-500 hover:underline">Phantom</a>, <a target="blank" href={"https://ultimate.app"} className="text-blue-600 dark:text-purple-500 hover:underline">Ultimate</a> and <a target="blank" href={"https://solflare.com"} className="text-blue-600 dark:text-purple-500 hover:underline">Solflare</a>. Once you have a wallet installed, click the <span className="text-blue-300 dark:text-purple-300">Select Wallet</span> button at the top of your browsers screen, or open the website in your mobile wallet.
                     <br/>
-                    If you need assistance, find one of our knowledgeable helpers at the Festivals after party on Saturday.
+                    If you need assistance, find one of our knowledgeable helpers at the Film Festivals after party on Saturday.
                 </p>
             </div>
             <div className="text-center"><button className="btn loading">Please connect a wallet!</button></div>
