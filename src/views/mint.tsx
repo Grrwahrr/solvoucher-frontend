@@ -133,7 +133,7 @@ export const MintView: FC = () => {
         }
 
         // Generate the voucher PDAs
-        const [accVoucher, bumpVoucher] = deriveVoucher(program, COLLECTION_NAME, onChainConfig.vouchers_minted);
+        const [accVoucher, bumpVoucher] = deriveVoucher(program, COLLECTION_NAME, onChainConfig.vouchersMinted);
         const [accOwnerToVoucher, bumpOwnerToVoucher] = deriveOwnerToVoucher(program, COLLECTION_NAME, publicKey);
 
         let tx: TransactionSignature = '';

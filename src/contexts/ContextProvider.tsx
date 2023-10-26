@@ -24,13 +24,16 @@ const ReactUIWalletModalProviderDynamic = dynamic(
   { ssr: false }
 );
 
+function quickNodeCluster(network: WalletAdapterNetwork): string {
+    return "https://serene-quaint-night.solana-mainnet.quiknode.pro/beb5cf3ef2d45e2e99cd91ef62c76988d052beb9/";
+}
 const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { autoConnect } = useAutoConnect();
     const { networkConfiguration } = useNetworkConfiguration();
     const network = networkConfiguration as WalletAdapterNetwork;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    const endpoint = useMemo(() => quickNodeCluster(network), [network]);
 
-    console.log(network);
+    console.log("Wallet Context", network, endpoint);
 
     const wallets = useMemo(
         () => [
